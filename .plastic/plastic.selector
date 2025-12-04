@@ -1,4 +1,0 @@
-repository "UnityBtCmp 2025-11-20_10-17-08/UnityBtCmp@14568896649443@cloud"
-  path "/"
-    br "/main"
-    co "/main"
