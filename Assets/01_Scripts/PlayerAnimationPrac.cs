@@ -36,7 +36,6 @@ public class PlayerAnimationPrac : MonoBehaviour
         Dir = currentDir.ToString();
         State = currentState.ToString();    
 
-
         if (currentState == PlayerState.Attack) {
             return;
         }
@@ -46,7 +45,6 @@ public class PlayerAnimationPrac : MonoBehaviour
         //player attack
         if (Input.GetKey(KeyCode.Q) && !isAttack)
         {
-            anim.Play("Player" + currentState + "Attack");
             currentState = PlayerState.Attack;
 
             Invoke("AttackOff", 0.5f);
