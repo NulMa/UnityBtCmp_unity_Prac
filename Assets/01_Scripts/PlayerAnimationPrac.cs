@@ -11,16 +11,13 @@ enum PlayerState {
 }
 public class PlayerAnimationPrac : MonoBehaviour
 {
-
     Animator anim;
     SpriteRenderer sprite;
 
     public float speed = 3;
-    public bool isAttack = false;
 
-    PlayerDir currentDir;
-    PlayerState currentState;
-
+    PlayerDir _currentDir;
+    PlayerState _currentState;
     public string Dir;
     public string State;
 
@@ -33,46 +30,47 @@ public class PlayerAnimationPrac : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Dir = currentDir.ToString();
-        State = currentState.ToString();    
+        Dir = _currentDir.ToString();
+        State = _currentState.ToString();
 
-        if (currentState == PlayerState.Attack) {
+        if (_currentState == PlayerState.Attack) {
             return;
         }
 
         PlayerMove();
-
-        //player attack
-        if (Input.GetKey(KeyCode.Q) && !isAttack)
-        {
-            currentState = PlayerState.Attack;
-
-            Invoke("AttackOff", 0.5f);
-        }
+        PlayerAttack();
 
         UpdateAnimation();
     }
 
     public void UpdateAnimation() {
-        anim.Play("Player" + currentDir + currentState);
+        anim.Play("Player" + _currentDir + _currentState);
+    }
+
+    public void PlayerAttack() {
+        if (Input.GetKey(KeyCode.Q)) {
+            Debug.Log("Attack");
+            _currentState = PlayerState.Attack;
+            Debug.Log("Attack22222222222222222");
+        }
     }
 
     public void PlayerMove() {
         //2dplayer move
         if (Input.GetAxis("Horizontal") != 0) {
             transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * speed * 0.1f);
-            currentState = PlayerState.Walk;
-            currentDir = PlayerDir.Side;
+            _currentState = PlayerState.Walk;
+            _currentDir = PlayerDir.Side;
         }
         if (Input.GetAxis("Vertical") != 0) {
             transform.Translate(Vector3.up * Input.GetAxis("Vertical") * speed * 0.1f);
-            currentState = PlayerState.Walk;
+            _currentState = PlayerState.Walk;
 
             if (Input.GetAxis("Vertical") > 0) {
-                currentDir = PlayerDir.Up;
+                _currentDir = PlayerDir.Up;
             }
             else if (Input.GetAxis("Vertical") < 0) {
-                currentDir = PlayerDir.Down;
+                _currentDir = PlayerDir.Down;
             }
         }
 
@@ -86,16 +84,13 @@ public class PlayerAnimationPrac : MonoBehaviour
 
         //player idle
         if (Input.GetAxis("Vertical") == 0) {
-            //currentState = PlayerState.Side.ToString();
             if (Input.GetAxis("Horizontal") == 0) {
-                currentState = PlayerState.Idle;
+                _currentState = PlayerState.Idle;
             }
         }
     }
     public void AttackOff()
     {
-        currentState = PlayerState.Idle;
+        _currentState = PlayerState.Idle;
     }
-
-
 }
