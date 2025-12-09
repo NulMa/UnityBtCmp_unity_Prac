@@ -18,8 +18,6 @@ public class PlayerAnimationPrac : MonoBehaviour
 
     PlayerDir _currentDir;
     PlayerState _currentState;
-    public string Dir;
-    public string State;
 
     void Start()
     {
@@ -30,13 +28,9 @@ public class PlayerAnimationPrac : MonoBehaviour
     // Update is called once per frame
     void FixedUpdate()
     {
-        Dir = _currentDir.ToString();
-        State = _currentState.ToString();
-
         if (_currentState == PlayerState.Attack) {
             return;
         }
-
         PlayerMove();
         PlayerAttack();
 
@@ -49,19 +43,17 @@ public class PlayerAnimationPrac : MonoBehaviour
 
     public void PlayerAttack() {
         if (Input.GetKey(KeyCode.Q)) {
-            Debug.Log("Attack");
             _currentState = PlayerState.Attack;
-            Debug.Log("Attack22222222222222222");
         }
     }
 
     public void PlayerMove() {
-        //2dplayer move
         if (Input.GetAxis("Horizontal") != 0) {
             transform.Translate(Vector3.right * Input.GetAxis("Horizontal") * speed * 0.1f);
             _currentState = PlayerState.Walk;
             _currentDir = PlayerDir.Side;
         }
+
         if (Input.GetAxis("Vertical") != 0) {
             transform.Translate(Vector3.up * Input.GetAxis("Vertical") * speed * 0.1f);
             _currentState = PlayerState.Walk;
