@@ -1,3 +1,4 @@
+using System.Collections;
 using UnityEngine;
 enum PlayerDir {
     Up,
@@ -31,6 +32,8 @@ public class PlayerAnimationPrac : MonoBehaviour
         if (_currentState == PlayerState.Attack) {
             return;
         }
+        StartCoroutine(CoTest());
+
         PlayerMove();
         PlayerAttack();
 
@@ -41,6 +44,10 @@ public class PlayerAnimationPrac : MonoBehaviour
         anim.Play("Player" + _currentDir + _currentState);
     }
 
+
+    IEnumerator CoTest() {
+        yield return new WaitForSeconds(2f);
+    }
     public void PlayerAttack() {
         if (Input.GetKey(KeyCode.Q)) {
             _currentState = PlayerState.Attack;
