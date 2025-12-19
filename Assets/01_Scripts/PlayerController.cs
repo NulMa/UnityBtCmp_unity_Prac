@@ -41,12 +41,30 @@ public class PlayerController : MonoBehaviour
 
     }
 
+
+    Vector3 destination;
     private void FixedUpdate()
     {
+
         transform.position += moveDirection * _speed * Time.deltaTime;
         if (moveDirection != Vector3.zero && !isJumping)
         {
             currentState = state.Run.ToString();
+        }
+
+        if(destination != transform.position)
+        {
+            GameObject removeMarker = GameObject.Find("@Marker");
+            if (Vector3.Distance(transform.position, destination) < 0.1f)
+            {
+                destination = transform.position;
+
+                if (removeMarker != null)
+                {
+                    Destroy(removeMarker);
+                }
+            }
+            transform.position = Vector3.MoveTowards(transform.position, destination, _speed * Time.deltaTime);
         }
 
         if (Input.GetMouseButton(0))
@@ -65,9 +83,9 @@ public class PlayerController : MonoBehaviour
                     marker = Instantiate(markerPrefab);
                     marker.name = "@Marker";
                 }
-                marker.transform.position = hitInfo.point + Vector3.up;
+                marker.transform.position = hitInfo.point + Vector3.up*2;
 
-                transform.position = Vector3.MoveTowards(transform.position, hitInfo.point, _speed * Time.deltaTime);
+                destination = hitInfo.point;
 
             }
             else
