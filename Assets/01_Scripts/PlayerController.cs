@@ -20,10 +20,15 @@ public class PlayerController : MonoBehaviour
     public float _jumpForce = 5f;
     public bool isJumping = false;
     public string currentState;
+    public float _rayLength;
+
+    public GameObject markerPrefab;
 
     Vector2 inputVec2;
     Vector3 moveDirection;
 
+
+    int layerMask = (1 << 6) + (1 << 8); // Layer 6: Ground, Layer 8: Obstacle
     void Start()
     {
         _mainCam = FindObjectOfType<MainCam>();
@@ -33,7 +38,7 @@ public class PlayerController : MonoBehaviour
 
     void Update()
     {
-        //anim.Play("Player_" + currentState);
+
     }
 
     private void FixedUpdate()
@@ -44,8 +49,32 @@ public class PlayerController : MonoBehaviour
             currentState = state.Run.ToString();
         }
 
-        //playerRotation();
+        if (Input.GetMouseButton(0))
+        {
+            RaycastHit hitInfo;
+            Ray r = Camera.main.ScreenPointToRay(Input.mousePosition);
+            if (Physics.Raycast(r, out hitInfo, _rayLength, layerMask))
+            {
+                Logger.LogWarning($"Hit : {hitInfo.point}");
 
+
+                GameObject marker;
+                marker = GameObject.Find("@Marker");
+                if ((marker == null))
+                {
+                    marker = Instantiate(markerPrefab);
+                    marker.name = "@Marker";
+                }
+                marker.transform.position = hitInfo.point + Vector3.up;
+
+                transform.position = Vector3.MoveTowards(transform.position, hitInfo.point, _speed * Time.deltaTime);
+
+            }
+            else
+            {
+                Logger.LogWarning($"No Hit");
+            }
+        }
     }
 
     public void playerRotation()
@@ -83,13 +112,13 @@ public class PlayerController : MonoBehaviour
 
     public void OnFire(InputValue value)
     {
-        bool isFiring = value.isPressed;
-        if (isFiring)
-        {
-            isJumping = true;
-            currentState = state.Jump.ToString();
-            rigid.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
-        }
+        //bool isFiring = value.isPressed;
+        //if (isFiring)
+        //{
+        //    isJumping = true;
+        //    currentState = state.Jump.ToString();
+        //    rigid.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
+        //}
     }
 
     private void OnCollisionEnter(Collision collision)
