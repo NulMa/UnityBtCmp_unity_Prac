@@ -29,28 +29,22 @@ public class PlayerController : MonoBehaviour
         _mainCam = FindObjectOfType<MainCam>();
         anim = GetComponent<Animator>();
         rigid = GetComponent<Rigidbody>();
-        Managers.Input.KeyAction += OnKeyboard;
     }
 
     void Update()
     {
-        anim.Play("Player_" + currentState);
+        //anim.Play("Player_" + currentState);
     }
 
     private void FixedUpdate()
     {
-        //if(Input.anyKey == false && !isJumping)
-        //{
-        //    //currentState = state.Idle.ToString();
-        //}
-
         transform.position += moveDirection * _speed * Time.deltaTime;
         if (moveDirection != Vector3.zero && !isJumping)
         {
             currentState = state.Run.ToString();
         }
 
-        playerRotation();
+        //playerRotation();
 
     }
 
@@ -68,8 +62,14 @@ public class PlayerController : MonoBehaviour
 
     public void OnLook(InputValue value)
     {
-        Vector2 lookVec2 = value.Get<Vector2>();
-        //Debug.Log("Look: " + lookVec2);
+        //player look at mouse position
+        Vector3 mousePos = new Vector3(value.Get<Vector2>().x, value.Get<Vector2>().y, 0);
+        mousePos.z = Vector3.Distance(_mainCam.transform.position, transform.position);
+        Vector3 worldMousePos = _mainCam.GetComponent<Camera>().ScreenToWorldPoint(mousePos);
+        Vector3 lookDir = worldMousePos - transform.position;
+        lookDir.y = 0;
+        Quaternion toRotation = Quaternion.LookRotation(lookDir, Vector3.up);
+        transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, 0.5f);
     }
 
     public void OnMove(InputValue value)
@@ -86,36 +86,10 @@ public class PlayerController : MonoBehaviour
         bool isFiring = value.isPressed;
         if (isFiring)
         {
-            Debug.Log("Fire!");
-        }
-    }
-
-    void OnKeyboard()
-    {
-        float h = Input.GetAxisRaw("Horizontal");
-        float v = Input.GetAxisRaw("Vertical");
-        Vector3 dir = new Vector3(h, 0, v).normalized;
-        transform.position += dir * _speed * Time.deltaTime;
-
-
-        //rotate with slerp
-        if (dir != Vector3.zero)
-        {
-            //Quaternion toRotation = Quaternion.LookRotation(dir, Vector3.up);
-            //transform.rotation = Quaternion.Slerp(transform.rotation, toRotation, 0.25f);
-
-
-            if (!isJumping) currentState = state.Run.ToString();
-        }
-
-        //jump
-        if (Input.GetKeyDown(KeyCode.Space))
-        {
             isJumping = true;
             currentState = state.Jump.ToString();
             rigid.AddForce(Vector3.up * _jumpForce, ForceMode.Impulse);
         }
-
     }
 
     private void OnCollisionEnter(Collision collision)
